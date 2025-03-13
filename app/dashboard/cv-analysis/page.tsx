@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Search, FileText, Eye } from "lucide-react"
+import { Search, FileText, Eye, Briefcase } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -32,6 +32,13 @@ interface CVAnalysis {
   SUMMARIZE: string
   DATE: string
   DATE_OF_BIRTH: string
+  JOB_APPLIED: string
+  JOB_TITLE?: string
+}
+
+interface JobPost {
+  id: string
+  title: string
 }
 
 export default function CVAnalysisPage() {
@@ -39,19 +46,42 @@ export default function CVAnalysisPage() {
   const [filteredData, setFilteredData] = useState<CVAnalysis[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [jobPosts, setJobPosts] = useState<Record<string, string>>({})
 
   useEffect(() => {
+    const fetchJobPosts = async () => {
+      try {
+        const q = query(collection(db, "job-posts"))
+        const querySnapshot = await getDocs(q)
+
+        const jobs: Record<string, string> = {}
+        querySnapshot.forEach((doc) => {
+          jobs[doc.id] = doc.data().title
+        })
+
+        return jobs
+      } catch (error) {
+        console.error("Error fetching job posts:", error)
+        return {}
+      }
+    }
+
     const fetchCVData = async () => {
       try {
+        const jobs = await fetchJobPosts()
+        setJobPosts(jobs)
+
         const q = query(collection(db, "cv analysis"), orderBy("DATE", "desc"))
         const querySnapshot = await getDocs(q)
 
         const data: CVAnalysis[] = []
         querySnapshot.forEach((doc) => {
+          const cvDoc = doc.data() as CVAnalysis
           data.push({
             id: doc.id,
-            ...doc.data(),
-          } as CVAnalysis)
+            ...cvDoc,
+            JOB_TITLE: cvDoc.JOB_APPLIED ? jobs[cvDoc.JOB_APPLIED] || "Unknown Position" : "Not specified",
+          })
         })
 
         setCvData(data)
@@ -69,7 +99,7 @@ export default function CVAnalysisPage() {
   useEffect(() => {
     if (searchTerm) {
       const filtered = cvData.filter((cv) => {
-        const searchable = `${cv.NAME} ${cv.EMAIL} ${cv.SKILLS} ${cv.CITY}`.toLowerCase()
+        const searchable = `${cv.NAME} ${cv.EMAIL} ${cv.SKILLS} ${cv.CITY} ${cv.JOB_TITLE}`.toLowerCase()
         return searchable.includes(searchTerm.toLowerCase())
       })
       setFilteredData(filtered)
@@ -97,7 +127,7 @@ export default function CVAnalysisPage() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search by name, email, skills or location..."
+            placeholder="Search by name, email, skills, location or job position..."
             className="pl-8 border-green-200 focus:border-green-400"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -131,6 +161,7 @@ export default function CVAnalysisPage() {
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Location</TableHead>
+                    <TableHead>Job Applied For</TableHead>
                     <TableHead>Rating</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -142,6 +173,16 @@ export default function CVAnalysisPage() {
                       <TableCell className="font-medium">{cv.NAME}</TableCell>
                       <TableCell>{cv.EMAIL}</TableCell>
                       <TableCell>{cv.CITY}</TableCell>
+                      <TableCell>
+                        {cv.JOB_TITLE ? (
+                          <div className="flex items-center">
+                            <Briefcase className="h-3.5 w-3.5 text-blue-600 mr-1.5" />
+                            <span>{cv.JOB_TITLE}</span>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-sm italic">Not specified</span>
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Badge className={getRatingColor(cv.VOTE)}>{cv.VOTE}/5</Badge>
                       </TableCell>
@@ -169,8 +210,19 @@ export default function CVAnalysisPage() {
                                   <p>Date of Birth: {cv.DATE_OF_BIRTH}</p>
                                 </div>
                                 <div>
-                                  <h3 className="font-semibold mb-1">Rating</h3>
-                                  <Badge className={`${getRatingColor(cv.VOTE)} text-lg px-2 py-1`}>{cv.VOTE}/5</Badge>
+                                  <h3 className="font-semibold mb-1">Application Details</h3>
+                                  <p>
+                                    <span className="font-medium">Position:</span> {cv.JOB_TITLE || "Not specified"}
+                                  </p>
+                                  <p>
+                                    <span className="font-medium">Rating:</span>{" "}
+                                    <Badge className={`${getRatingColor(cv.VOTE)} text-lg px-2 py-1`}>
+                                      {cv.VOTE}/5
+                                    </Badge>
+                                  </p>
+                                  <p>
+                                    <span className="font-medium">Date Applied:</span> {cv.DATE}
+                                  </p>
                                 </div>
                               </div>
 

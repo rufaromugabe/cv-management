@@ -3,11 +3,20 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Briefcase, CheckCircle, MapPin, Clock } from "lucide-react"
+import { ArrowRight, Briefcase, CheckCircle, MapPin, Clock, Info } from "lucide-react"
 import { db } from "@/lib/firebase"
 import { collection, getDocs, query, where } from "firebase/firestore"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog"
 
 interface JobPost {
   id: string
@@ -16,6 +25,8 @@ interface JobPost {
   department: string
   type: string
   description: string
+  requirements?: string
+  benefits?: string
 }
 
 export default function Home() {
@@ -37,6 +48,8 @@ export default function Home() {
             department: doc.data().department,
             type: doc.data().type,
             description: doc.data().description,
+            requirements: doc.data().requirements,
+            benefits: doc.data().benefits,
           })
         })
 
@@ -99,7 +112,7 @@ export default function Home() {
                 <div className="relative">
                   <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 opacity-30 blur"></div>
                   <img
-                    src="https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?height=400&width=400"
+                    src="/placeholder.svg?height=400&width=400"
                     alt="Career opportunities"
                     className="relative rounded-lg object-cover bg-white"
                     width={400}
@@ -210,11 +223,62 @@ export default function Home() {
                       </div>
                       <p className="text-gray-600 line-clamp-3 text-sm">{job.description}</p>
                     </CardContent>
-                    <CardFooter className="border-t border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50">
-                      <Link href={`/apply?job=${job.id}`} className="w-full">
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                          <CheckCircle className="h-4 w-4 mr-2" />
-                          Apply Now
+                    <CardFooter className="border-t border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 flex justify-between">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                          >
+                            <Info className="h-4 w-4 mr-1" />
+                            Read More
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle className="text-xl text-blue-800">{job.title}</DialogTitle>
+                            <DialogDescription className="flex items-center text-blue-600">
+                              <MapPin className="h-4 w-4 mr-1" />
+                              {job.location} • {job.type}
+                              {job.department && ` • ${job.department}`}
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div>
+                              <h4 className="font-semibold text-blue-700 mb-2">Job Description</h4>
+                              <p className="text-gray-700 whitespace-pre-line">{job.description}</p>
+                            </div>
+
+                            {job.requirements && (
+                              <div>
+                                <h4 className="font-semibold text-blue-700 mb-2">Requirements</h4>
+                                <p className="text-gray-700 whitespace-pre-line">{job.requirements}</p>
+                              </div>
+                            )}
+
+                            {job.benefits && (
+                              <div>
+                                <h4 className="font-semibold text-blue-700 mb-2">Benefits</h4>
+                                <p className="text-gray-700 whitespace-pre-line">{job.benefits}</p>
+                              </div>
+                            )}
+                          </div>
+                          <DialogFooter>
+                            <Link href={`/apply?job=${job.id}`} className="w-full sm:w-auto">
+                              <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                                <CheckCircle className="h-4 w-4 mr-2" />
+                                Apply for this Position
+                              </Button>
+                            </Link>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+
+                      <Link href={`/apply?job=${job.id}`}>
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          Apply
                         </Button>
                       </Link>
                     </CardFooter>

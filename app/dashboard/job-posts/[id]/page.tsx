@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState ,use} from "react"
+import { useEffect, useState,use } from "react"
 import { useRouter } from "next/navigation"
 import { db } from "@/lib/firebase"
 import { doc, getDoc, updateDoc } from "firebase/firestore"
