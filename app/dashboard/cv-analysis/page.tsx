@@ -72,9 +72,8 @@ export default function CVAnalysisPage() {
         querySnapshot.forEach((doc) => {
           const cvDoc = doc.data() as CVAnalysis
 
-          const { id, ...restCV } = cvDoc
+          const { ...restCV } = cvDoc
           data.push({
-            id: doc.id,
             ...restCV,
             VOTE: cvDoc.VOTE,
             JOB_TITLE: cvDoc.JOB_APPLIED,
@@ -163,7 +162,7 @@ export default function CVAnalysisPage() {
             <DialogContent className="max-w-full sm:max-w-3xl max-h-[90vh] overflow-hidden p-0">
               <DialogHeader className="px-4 py-3 border-b">
                 <DialogTitle>CV Analysis: {cv.NAME}</DialogTitle>
-                <DialogDescription className="text-xs">Detailed analysis of the candidate's CV</DialogDescription>
+                <DialogDescription className="text-xs">Detailed analysis of the candidate CV</DialogDescription>
               </DialogHeader>
               <ScrollArea className="max-h-[calc(90vh-120px)]">
                 <div className="grid gap-4 p-4">
@@ -323,7 +322,7 @@ export default function CVAnalysisPage() {
                           <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
                             <DialogHeader>
                               <DialogTitle>CV Analysis: {cv.NAME}</DialogTitle>
-                              <DialogDescription>Detailed analysis of the candidate's CV</DialogDescription>
+                              <DialogDescription>Detailed analysis of the candidate CV</DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                               <div className="grid grid-cols-2 gap-4">

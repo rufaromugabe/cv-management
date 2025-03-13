@@ -29,7 +29,7 @@ interface JobPost {
   department: string
   type: string
   status: string
-  createdAt: any
+  createdAt: Date
 }
 
 export default function JobPostsPage() {

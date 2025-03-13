@@ -170,7 +170,7 @@ export default function ApplyPage() {
       formData.append("submittedAt", new Date().toISOString())
       formData.append("formMode", "production")
 
-      const response = await fetch("https://n8n.afrainity.com/webhook-test/24e1ab05-41b4-45d0-9d67-840b9888d46b", {
+      const response = await fetch("https://n8n.afrainity.com/webhook/24e1ab05-41b4-45d0-9d67-840b9888d46b", {
         method: "POST",
         body: formData,
       })
@@ -220,8 +220,8 @@ export default function ApplyPage() {
                 <div className="ml-4">
                   <h3 className="text-lg font-semibold text-green-800">Application Submitted Successfully!</h3>
                   <div className="mt-2 text-sm text-green-700">
-                    <p>Thank you for applying! We've received your CV and will review it shortly.</p>
-                    <p className="mt-1">You'll be redirected to the homepage in a few seconds...</p>
+                    <p>Thank you for applying! We ve received your CV and will review it shortly.</p>
+                    <p className="mt-1">You ll be redirected to the homepage in a few seconds...</p>
                   </div>
                   <div className="mt-4">
                     <Button

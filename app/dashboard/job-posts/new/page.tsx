@@ -157,7 +157,7 @@ export default function NewJobPostPage() {
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Only jobs with "Active" status will appear on the application form
+                  Only jobs with Active status will appear on the application form
                 </p>
               </div>
             </div>

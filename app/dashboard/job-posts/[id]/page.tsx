@@ -221,7 +221,7 @@ export default function EditJobPostPage({ params }: { params: Promise<{ id: stri
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Only jobs with "Active" status will appear on the application form
+                  Only jobs with &quot;Active&quot; status will appear on the application form
                 </p>
               </div>
             </div>

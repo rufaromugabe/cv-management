@@ -33,7 +33,7 @@ interface JobPost {
 export default function Home() {
   const [activeJobs, setActiveJobs] = useState<JobPost[]>([])
   const [loading, setLoading] = useState(true)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
 
   useEffect(() => {
     const fetchActiveJobs = async () => {
@@ -152,7 +152,7 @@ export default function Home() {
                 <div className="relative max-w-[300px] sm:max-w-[350px] md:max-w-[400px]">
                   <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 opacity-30 blur"></div>
                   <img
-                    src="/placeholder.svg?height=400&width=400"
+                    src="/pic.jpg?height=600&width=600"
                     alt="Career opportunities"
                     className="relative rounded-lg object-cover bg-white w-full"
                     width={400}
@@ -201,7 +201,7 @@ export default function Home() {
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold text-blue-800">Get Matched</h3>
                   <p className="text-gray-600 text-center text-sm sm:text-base">
-                    We'll contact you if your profile matches our opportunities
+                    We ll contact you if your profile matches our opportunities
                   </p>
                 </div>
               </div>
