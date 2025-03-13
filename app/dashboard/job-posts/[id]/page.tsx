@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState ,use} from "react"
 import { useRouter } from "next/navigation"
 import { db } from "@/lib/firebase"
 import { doc, getDoc, updateDoc } from "firebase/firestore"
@@ -15,10 +15,11 @@ import { AlertCircle, ArrowLeft, Loader2, Save } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-export default function EditJobPostPage({ params }: { params: { id: string } }) {
-  const router = useRouter()
-  const { id } = params
 
+export default function EditJobPostPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter()
+
+  const { id } = use(params);
   const [formData, setFormData] = useState({
     title: "",
     location: "",
@@ -215,10 +216,13 @@ export default function EditJobPostPage({ params }: { params: { id: string } }) 
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Draft">Draft</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Active">Active (visible on apply form)</SelectItem>
                     <SelectItem value="Closed">Closed</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground">
+                  Only jobs with "Active" status will appear on the application form
+                </p>
               </div>
             </div>
 

@@ -147,15 +147,18 @@ export default function NewJobPostPage() {
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
                 <Select value={formData.status} onValueChange={(value) => handleSelectChange("status", value)}>
-                  <SelectTrigger id="status">
+                  <SelectTrigger id="status" className="border-blue-200 focus:border-blue-400">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Draft">Draft</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Active">Active (visible on apply form)</SelectItem>
                     <SelectItem value="Closed">Closed</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground">
+                  Only jobs with "Active" status will appear on the application form
+                </p>
               </div>
             </div>
 

@@ -88,7 +88,7 @@ export default function JobPostsPage() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "active":
-        return "bg-green-100 text-green-800 hover:bg-green-200"
+        return "bg-green-100 text-green-800 hover:bg-green-200 border border-green-300"
       case "draft":
         return "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
       case "closed":
