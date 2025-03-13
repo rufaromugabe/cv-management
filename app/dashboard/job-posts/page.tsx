@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, Plus, Edit, Trash2, Briefcase } from "lucide-react"
+import { Search, Plus, Edit, Trash2, Briefcase, Filter } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +37,25 @@ export default function JobPostsPage() {
   const [filteredPosts, setFilteredPosts] = useState<JobPost[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    // Check if we're on the client side
+    if (typeof window !== "undefined") {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth < 768)
+      }
+
+      // Initial check
+      checkMobile()
+
+      // Add event listener for window resize
+      window.addEventListener("resize", checkMobile)
+
+      // Cleanup
+      return () => window.removeEventListener("resize", checkMobile)
+    }
+  }, [])
 
   useEffect(() => {
     const fetchJobPosts = async () => {
@@ -98,58 +117,123 @@ export default function JobPostsPage() {
     }
   }
 
+  // Mobile card view for each job post
+  const MobileJobCard = ({ job }: { job: JobPost }) => (
+    <Card key={job.id} className="mb-4 border-blue-100 overflow-hidden">
+      <CardHeader className="p-4 pb-2 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+        <div className="flex justify-between items-start">
+          <CardTitle className="text-base text-blue-800">{job.title}</CardTitle>
+          <Badge className={getStatusColor(job.status)}>{job.status}</Badge>
+        </div>
+        <CardDescription className="text-xs flex items-center text-blue-600">
+          <Briefcase className="h-3 w-3 mr-1" />
+          {job.location}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="p-4 space-y-2 text-sm">
+        <div className="flex items-center">
+          <span className="font-medium w-24">Department:</span>
+          <span>{job.department || "Not specified"}</span>
+        </div>
+        <div className="flex items-center">
+          <span className="font-medium w-24">Type:</span>
+          <span>{job.type}</span>
+        </div>
+        <div className="flex justify-between mt-3">
+          <Link href={`/dashboard/job-posts/${job.id}`}>
+            <Button variant="outline" size="sm" className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 text-xs">
+              <Edit className="h-3 w-3 mr-1" />
+              Edit
+            </Button>
+          </Link>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" size="sm" className="text-red-600 hover:text-red-800 hover:bg-red-50 text-xs">
+                <Trash2 className="h-3 w-3 mr-1" />
+                Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="max-w-[90vw] sm:max-w-md">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription className="text-sm">
+                  This will permanently delete the job post. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => handleDeleteJob(job.id)} className="bg-red-600 hover:bg-red-700">
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Job Posts</h1>
-          <p className="text-muted-foreground">Manage your job postings</p>
+          <h1 className="text-xl sm:text-3xl font-bold tracking-tight">Job Posts</h1>
+          <p className="text-muted-foreground text-sm">Manage your job postings</p>
         </div>
         <Link href="/dashboard/job-posts/new">
-          <Button>
+          <Button size={isMobile ? "sm" : "default"} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             New Job Post
           </Button>
         </Link>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+        <div className="relative flex-1 w-full">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search by title, location or department..."
-            className="pl-8"
+            className="pl-8 text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button variant="outline">Filter</Button>
+        <Button variant="outline" size="sm" className="sm:w-auto w-full">
+          <Filter className="h-4 w-4 mr-2" />
+          Filter
+        </Button>
       </div>
 
       <Card className="border-blue-200 shadow-md overflow-hidden">
-        <CardHeader className="bg-blue-50 border-b border-blue-100">
-          <CardTitle>Job Listings</CardTitle>
-          <CardDescription>{filteredPosts.length} job posts found</CardDescription>
+        <CardHeader className="bg-blue-50 border-b border-blue-100 p-4">
+          <CardTitle className="text-lg sm:text-xl">Job Listings</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">{filteredPosts.length} job posts found</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 sm:p-4">
           {loading ? (
             <div className="flex justify-center py-8">
-              <p>Loading job posts...</p>
+              <p className="text-sm">Loading job posts...</p>
             </div>
           ) : filteredPosts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8">
-              <Briefcase className="h-10 w-10 text-muted-foreground mb-2" />
-              <p className="text-muted-foreground">No job posts found</p>
+              <Briefcase className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground mb-2" />
+              <p className="text-muted-foreground text-sm">No job posts found</p>
               <Link href="/dashboard/job-posts/new" className="mt-4">
-                <Button>
+                <Button size="sm">
                   <Plus className="mr-2 h-4 w-4" />
                   Create your first job post
                 </Button>
               </Link>
             </div>
+          ) : isMobile ? (
+            <div className="p-4">
+              {filteredPosts.map((job) => (
+                <MobileJobCard key={job.id} job={job} />
+              ))}
+            </div>
           ) : (
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
