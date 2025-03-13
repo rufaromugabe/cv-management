@@ -22,28 +22,37 @@ export default function DashboardSidebar() {
     }
   }
 
+  const handleLinkClick = () => {
+    // Close sidebar only on mobile
+    if (window.innerWidth < 768) {
+      setIsOpen(false)
+    }
+  }
+
   const isActive = (path: string) => {
     return pathname === path
   }
 
   return (
-    <>
-      <div className="md:hidden p-4 border-b">
-        <Button variant="outline" size="icon" onClick={() => setIsOpen(!isOpen)}>
+    <div className="md:relative">
+      <div className="md:hidden fixed top-0 left-0 right-0 bg-white z-50 border-b">
+        <Button variant="outline" size="icon" onClick={() => setIsOpen(!isOpen)} className="m-4">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </div>
 
       <div
-        className={`fixed inset-0 z-50 bg-background/80 backdrop-blur-sm md:hidden ${isOpen ? "block" : "hidden"}`}
+        className={`fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden ${
+          isOpen ? "block" : "hidden"
+        }`}
         onClick={() => setIsOpen(false)}
       ></div>
 
       <div
-        className={`fixed top-0 left-0 z-50 h-[100vh] w-3/4 max-w-xs bg-gradient-to-b from-blue-50 to-indigo-50 shadow-lg transition-transform duration-300 ease-in-out md:sticky md:translate-x-0 ${
+        className={`fixed top-0 left-0 z-50 h-screen w-3/4 max-w-xs bg-gradient-to-b from-blue-50 to-indigo-50 shadow-lg transition-transform duration-300 ease-in-out md:sticky md:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:block border-r border-blue-200`}
+        } md:block md:h-screen border-r border-blue-200`}
       >
         <div className="flex flex-col h-[100vh]">
           <div className="flex-grow">
@@ -51,13 +60,13 @@ export default function DashboardSidebar() {
               <h2 className="text-xl font-bold text-blue-800">Admin Dashboard</h2>
             </div>
             <nav className="space-y-1 p-4">
-              <Link href="/dashboard">
+              <Link href="/dashboard" onClick={handleLinkClick}>
                 <Button variant={isActive("/dashboard") ? "default" : "ghost"} className="w-full justify-start">
                   <Home className="mr-2 h-5 w-5" />
                   Dashboard
                 </Button>
               </Link>
-              <Link href="/dashboard/cv-analysis">
+              <Link href="/dashboard/cv-analysis" onClick={handleLinkClick}>
                 <Button
                   variant={isActive("/dashboard/cv-analysis") ? "default" : "ghost"}
                   className="w-full justify-start"
@@ -66,7 +75,7 @@ export default function DashboardSidebar() {
                   CV Analysis
                 </Button>
               </Link>
-              <Link href="/dashboard/job-posts">
+              <Link href="/dashboard/job-posts" onClick={handleLinkClick}>
                 <Button
                   variant={isActive("/dashboard/job-posts") ? "default" : "ghost"}
                   className="w-full justify-start"
@@ -75,7 +84,7 @@ export default function DashboardSidebar() {
                   Job Posts
                 </Button>
               </Link>
-              <Link href="/dashboard/job-posts/new">
+              <Link href="/dashboard/job-posts/new" onClick={handleLinkClick}>
                 <Button
                   variant={isActive("/dashboard/job-posts/new") ? "default" : "ghost"}
                   className="w-full justify-start"
@@ -98,6 +107,6 @@ export default function DashboardSidebar() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }

@@ -8,10 +8,10 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-      <AuthCheck>
+    <AuthCheck>
       <div className="flex min-h-screen">
         <DashboardSidebar />
-        <div className="flex-1 p-6">{children}</div>
+        <div className="flex-1 md:p-6 pt-[72px] md:pt-6 px-6">{children}</div>
       </div>
     </AuthCheck>
   )
