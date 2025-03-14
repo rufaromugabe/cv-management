@@ -170,7 +170,7 @@ export default function ApplyPage() {
       formData.append("submittedAt", new Date().toISOString())
       formData.append("formMode", "production")
 
-      const response = await fetch("https://n8n.afrainity.com/webhook/24e1ab05-41b4-45d0-9d67-840b9888d46b", {
+      const response = await fetch("https://n8n.afrainity.com/webhook-test/24e1ab05-41b4-45d0-9d67-840b9888d46b", {
         method: "POST",
         body: formData,
       })

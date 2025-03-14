@@ -8,6 +8,7 @@ import { FileText, Users, Briefcase, PlusCircle, LineChart } from "lucide-react"
 import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 interface JobRating {
   id: string
@@ -73,19 +74,7 @@ export default function DashboardPage() {
       try {
         setLoadingJobStats(true)
 
-        // Get all job posts
-        const jobPostsQuery = query(collection(db, "job-posts"))
-        const jobPostsSnapshot = await getDocs(jobPostsQuery)
-
-        const jobsMap = new Map()
-        jobPostsSnapshot.forEach((doc) => {
-          jobsMap.set(doc.id, {
-            id: doc.id,
-            title: doc.data().title,
-          })
-        })
-
-        // Get CV analysis with job information
+        // Get CV analysis data only
         const cvAnalysisQuery = query(collection(db, "cv analysis"))
         const cvAnalysisSnapshot = await getDocs(cvAnalysisQuery)
 
@@ -93,8 +82,8 @@ export default function DashboardPage() {
 
         cvAnalysisSnapshot.forEach((doc) => {
           const data = doc.data()
-          const jobId = data.JobId || "unknown"
-          const jobTitle = data.JOB_APPLIED || jobsMap.get(jobId)?.title || "Unknown Job"
+          const jobId = data.JOB_APPLIED || "unknown" // Use JOB_APPLIED as the key
+          const jobTitle = data.JOB_APPLIED || "Unknown Job"
           const rating = data.VOTE ? Number.parseInt(data.VOTE) : 0
           const date = data.submittedAt ? new Date(data.submittedAt) : new Date()
 
@@ -166,74 +155,49 @@ export default function DashboardPage() {
       )
     }
 
-    const ratings = selectedJobStats.ratings
-    const maxRating = 10 // Using 10-point scale
-    const chartHeight = 200
-    const chartWidth = "100%"
-
-    // Calculate points for the line
-    const points = ratings
-      .map((rating, index) => {
-        const x = `${(index / (ratings.length - 1)) * 100}%`
-        const y = chartHeight - (rating.rating / maxRating) * chartHeight
-        return `${x},${y}`
-      })
-      .join(" ")
+    // Format the data for recharts
+    const chartData = selectedJobStats.ratings.map((rating) => ({
+      date: rating.date.toLocaleDateString(),
+      rating: rating.rating,
+    }))
 
     return (
-      <div className="relative h-[200px] w-full mt-4">
-        {/* Y-axis labels */}
-        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-2">
-          <span>10</span>
-          <span>5</span>
-          <span>0</span>
-        </div>
-
-        {/* Chart area */}
-        <div className="absolute left-6 right-0 h-full">
-          {/* Horizontal grid lines */}
-          <div className="absolute w-full h-full flex flex-col justify-between">
-            <div className="border-t border-gray-200 w-full"></div>
-            <div className="border-t border-gray-200 w-full"></div>
-            <div className="border-t border-gray-200 w-full"></div>
-          </div>
-
-          {/* SVG for line chart */}
-          <svg width={chartWidth} height={chartHeight} className="overflow-visible">
-            {/* Line */}
-            <polyline
-              points={points}
-              fill="none"
-              stroke="#3b82f6"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+      <div className="w-full h-[200px] mt-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <RechartsLineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+            <XAxis 
+              dataKey="date" 
+              tick={{ fontSize: 10 }}
+              tickFormatter={(value, index) => {
+                // Only show first, middle, and last date
+                if (index === 0 || index === chartData.length - 1 || index === Math.floor(chartData.length / 2)) {
+                  return value;
+                }
+                return '';
+              }}
             />
-
-            {/* Data points */}
-            {ratings.map((rating, index) => {
-              const x = `${(index / (ratings.length - 1)) * 100}%`
-              const y = chartHeight - (rating.rating / maxRating) * chartHeight
-              return (
-                <g key={index}>
-                  <circle cx={x} cy={y} r="4" fill="#3b82f6" stroke="white" strokeWidth="2" />
-                  <title>Rating: {rating.rating}/10</title>
-                </g>
-              )
-            })}
-          </svg>
-
-          {/* X-axis labels (show first, middle, and last date) */}
-          <div className="absolute bottom-[-20px] w-full flex justify-between text-xs text-gray-500">
-            {ratings.length > 0 && (
-              <>
-                <span>{ratings[0].date.toLocaleDateString()}</span>
-                {ratings.length > 2 && <span>{ratings[Math.floor(ratings.length / 2)].date.toLocaleDateString()}</span>}
-                <span>{ratings[ratings.length - 1].date.toLocaleDateString()}</span>
-              </>
-            )}
-          </div>
-        </div>
+            <YAxis 
+              domain={[0, 10]} 
+              ticks={[0, 5, 10]} 
+              tick={{ fontSize: 10 }}
+              tickFormatter={(value) => `${value}`}
+            />
+            <Tooltip 
+              formatter={(value) => [`${value}/10`, 'Rating']}
+              labelFormatter={(label) => `Date: ${label}`}
+              contentStyle={{ fontSize: '12px', borderRadius: '4px' }}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="rating" 
+              stroke="#3b82f6" 
+              strokeWidth={2} 
+              dot={{ r: 4, fill: '#3b82f6', stroke: 'white', strokeWidth: 2 }}
+              activeDot={{ r: 6 }}
+            />
+          </RechartsLineChart>
+        </ResponsiveContainer>
       </div>
     )
   }
