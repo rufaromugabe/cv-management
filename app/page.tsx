@@ -75,7 +75,7 @@ export default function Home() {
             <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center mr-2 sm:mr-3 shadow-md">
               <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent [color-scheme:only_light] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
               CV Portal
             </h1>
           </div>
@@ -132,7 +132,7 @@ export default function Home() {
                 <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm text-blue-600 shadow-sm">
                   <span className="font-medium">Career Opportunities</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tighter bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tighter bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent [color-scheme:only_light] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                   Find Your Next Career Opportunity
                 </h2>
                 <p className="text-gray-600 text-sm sm:text-base md:text-lg lg:text-base/relaxed xl:text-xl/relaxed max-w-[600px]">

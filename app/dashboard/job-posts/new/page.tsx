@@ -112,7 +112,7 @@ export default function NewJobPostPage() {
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
-                  placeholder="e.g. Remote, New York, etc."
+                  placeholder="e.g. Remote, Harare, etc."
                   required
                 />
               </div>
